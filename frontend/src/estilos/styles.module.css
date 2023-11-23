@@ -22,12 +22,12 @@
     justify-content: center;
     align-items: center;
     padding: 15px;
-    background:  #ebe0e0;
+    background:  #f1eeee;
 }
 
 .wrap-login {
     width: 390px;
-    background: #cab9b9;  
+    background: #d6cbcb;  
     border-radius: 10px;
     overflow: hidden;
     padding: 77px 55px 33px 55px;  
@@ -185,7 +185,7 @@ focus-input {
     justify-content: center;
     align-items: center;
     padding: 15px;
-    background:  #ebe0e0;
+    background:  #f1eeee;
     
 }
 
