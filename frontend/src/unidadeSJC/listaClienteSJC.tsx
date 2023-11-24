@@ -1,31 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FormEvent} from 'react';
 import axios from 'axios';
 import styles from '../estilos/styles.module.css';
 import { Link } from 'react-router-dom';
 import { Table, Modal, Button, Form } from 'react-bootstrap';
+import RemovedorCliente from '../removedores/removedorCliente';
+import RemovedorClienteLocal from '../removedores/removedorClienteLocal';
+import { Cliente } from '../cliente'; 
+import AtualizadorCliente from '../atualizador/atualizadorCliente';
+import { Endereco } from '../cliente';
+import { Telefone } from '../cliente';
 
-interface Telefone {
-    ddd: string;
-    numero: string;
-}
 
-interface Endereco {
-    cidade: string;
-    estado: string;
-    bairro: string;
-    rua: string;
-    numero: string;
-    codigoPostal: string;
-    informacoesAdicionais: string;
-}
-
-interface Cliente {
-  id: number;
-  nome: string;
-  sobreNome: string;
-  endereco: Endereco;
-  telefones: Telefone[];
-}
 function ListaClientesSJC(){
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [clienteAtualizar, setClienteAtualizar] = useState<Cliente | null>(null);
@@ -33,6 +18,23 @@ function ListaClientesSJC(){
   const [filtro, setFiltro] = useState('');  
   const [modalAlterarShow, setModalAlterarShow] = useState(false);
   const [modalExcluirShow, setModalExcluirShow] = useState(false);
+  const [state, setState] = useState<Cliente>({
+    id: '',
+    nome: '',
+    sobreNome: '',
+    endereco: {
+      cidade: '',
+      estado: '',
+      bairro: '',
+      rua: '',
+      numero: '',
+      codigoPostal: '',
+      informacoesAdicionais: '',
+    },
+    telefones: [],
+  });
+
+  
   
   
 useEffect(() => {
@@ -65,32 +67,7 @@ const abrirModalAtualizar = (cliente: Cliente) => {
   setModalAlterarShow(true);
 };
 
-const atualizarCliente = async (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-
-  if (clienteAtualizar) {
-    try {
-      const response = await axios.put(`http://localhost:32832/cliente/${clienteAtualizar.id}`, clienteAtualizar);
-      if (response.status === 200) {
-        setClientes(clientes.map(c => c.id === clienteAtualizar.id ? clienteAtualizar : c));
-        setModalAlterarShow(false); 
-      }
-    } catch (error) {
-      console.error('Erro ao atualizar cliente:', error);
-    }
-  }
-};
-
-const handleInputChange = (index: number, event: React.ChangeEvent<HTMLInputElement>, field: 'ddd' | 'numero') => {
-  setClienteAtualizar(prevState => {
-    if (prevState) {
-      const newTelefones = [...prevState.telefones];
-      newTelefones[index][field] = event.target.value;
-      return {...prevState, telefones: newTelefones};
-    }
-    return prevState;
-  });
-};
+const atualizadorCliente = new AtualizadorCliente();
 
 const handleNomeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   setClienteAtualizar(prevState => prevState ? {...prevState, nome: event.target.value} : null);
@@ -104,38 +81,47 @@ const handleEnderecoChange = (field: keyof Endereco, event: React.ChangeEvent<HT
   setClienteAtualizar(prevState => {
     if (prevState) {
       const newEndereco = {...prevState.endereco};
-      newEndereco[field] = event.target.value;
+      newEndereco[field as keyof Endereco] = event.target.value;
       return {...prevState, endereco: newEndereco};
     }
     return prevState;
   });
 };
 
-const handleExcluir = async () => {
-  if (clienteModal) {
-    try {
-      await excluirCliente(clienteModal.id);
-      setModalExcluirShow(false);
-      // Atualizar a lista de clientes após a exclusão
-      const novaListaClientes = clientes.filter(cliente => cliente.id !== clienteModal.id);
-      setClientes(novaListaClientes);
-    } catch (error) {
-      console.error('Erro ao excluir cliente:', error);
+function handleInputChange(index: number, event: React.ChangeEvent<HTMLInputElement>, field: keyof Telefone) {
+  setClienteAtualizar(prevState => {
+    if (prevState) {
+      const newTelefones = [...prevState.telefones];
+      newTelefones[index][field as keyof Telefone] = event.target.value;
+      return {...prevState, telefones: newTelefones};
     }
+    return prevState;
+  });
+}
+
+const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  if (clienteAtualizar) {
+    atualizadorCliente.atualizar(clienteAtualizar);
   }
 };
-const excluirCliente = async (id: number) => {
-  try {
-    const response = await axios.delete(`http://localhost:8080/cliente/excluir/${id}`);
-    if (response.status === 200) {
-      console.log('Cliente excluído com sucesso');
-    } else {
-      console.log('Erro ao excluir cliente');
-    }
-  } catch (error) {
-    console.error('Erro ao fazer a solicitação:', error);
+
+
+const excluirRemoto = (idCliente: string) => {
+  let removedor = new RemovedorCliente();
+  let cliente = clientes.find(cliente => cliente.id === idCliente);
+  if (cliente) {
+    removedor.remover(cliente);
   }
-};
+}
+
+const excluirLocal = (id: string, e: any) => {
+  e.preventDefault();
+  let removedorLocal = new RemovedorClienteLocal();
+  let novosClientes = removedorLocal.remover(clientes, id);
+  setClientes(novosClientes);
+  excluirRemoto(id);
+}
 
 return (
   <div className={styles['container-lista']}>
@@ -175,7 +161,7 @@ return (
                               <td>{cliente.endereco.rua}, {cliente.endereco.numero}, {cliente.endereco.bairro}, {cliente.endereco.cidade} - {cliente.endereco.estado}, {cliente.endereco.codigoPostal}</td>
                               <td>                                  
                               <button onClick={() => handleAlterarShow(cliente)}>Alterar</button>
-                              <button onClick={() => { setModalExcluirShow(true); setClienteModal(cliente); }}>Excluir</button>
+                              <button onClick={(e) => excluirLocal(cliente.id, e)}>Excluir</button>
                               </td>
                           </tr>
                       ))}
@@ -189,7 +175,7 @@ return (
                 <Modal.Title>Atualizar Cliente</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-              <Form onSubmit={atualizarCliente}>
+              <Form onSubmit={handleSubmit}>
                 {clienteAtualizar && (
                   <>
                     <input type="hidden" name="id" value={clienteAtualizar.id} />

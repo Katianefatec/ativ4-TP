@@ -1,5 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import styles from '../estilos/styles.module.css';
+import CadastradorCliente from '../cadastradores/cadastradorCliente';
+
 
 
 function CadastroSJC() {
@@ -24,19 +26,14 @@ function CadastroSJC() {
         setState(prevState => ({ ...prevState, [name]: value }));
     }
 
+    const cadastradorCliente = new CadastradorCliente();
+
     function handleSubmitCliente(event: FormEvent) {
-        event.preventDefault();
-        console.log(state);
-        setState(prevState => ({
-            ...prevState,
-            nome: '',
-            nomeSocial: '',
-            cpf: '',
-            rgs: '',
-            genero: '',
-            telefones: ''
-        }));
+    event.preventDefault();
+    cadastradorCliente.cadastrar(state);
+    // ...
     }
+
 
     function handleSubmitProduto(event: FormEvent) {
         event.preventDefault();

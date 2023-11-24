@@ -9,7 +9,7 @@ import ListaProdutoTaubate from './unidadeTaubate/listaProdutoTaubate';
 import ListaClientesTaubate from './unidadeTaubate/listaClienteTaubate';
 import ListaServicoTaubate from './unidadeTaubate/listaServicoTaubate';
 import MenuTaubate from './unidadeTaubate/MenuTaubate';
-import CadastroSJC from './unidadeSJC/cadastroClienteSJC';
+import CadastroSJC from './unidadeSJC/cadastroSJC';
 import Relatorios from './unidadeSJC/relatoriosSJC';
 import RelatoriosTaubate from './unidadeTaubate/relatoriosTaubate';
 import CadastroTaubate from './unidadeTaubate/cadastroTaubate';
