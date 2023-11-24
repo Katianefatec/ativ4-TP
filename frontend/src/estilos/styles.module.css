@@ -432,6 +432,11 @@ span.bi.bi-search {
     font-size: 44px;
 }
 
+.btn-center {
+    text-align: center;
+    margin-right: 50px;
+}
+
 @media (max-width: 600px) {
     .wrap-login {
         width: 100%;

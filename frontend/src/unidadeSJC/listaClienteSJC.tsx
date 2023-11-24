@@ -145,7 +145,6 @@ const excluirLocal = (id: string, e: any) => {
 function formatPhoneNumber(ddd: string, numero: string) {
   return `(${ddd}) ${numero.substring(0, 4)}-${numero.substring(4)}`;
 }
-
 return (
   <div className={styles['container-lista']}>
       <div className={styles['wrap-lista']}>
