@@ -83,7 +83,7 @@ public class WbbackendApplication {
 
 			Cliente cliente3 = new Cliente();
 			cliente3.setNome("Isabel Cristina Leopoldina Augusta Gonzaga de Bourbon e Bragança");
-			cliente3.setSobreNome("Pricesa Isabel");
+			cliente3.setnomeSocial("Pricesa Isabel");
 
 			endereco = new Endereco();
 			endereco.setCidade("Rio de Janeiro");

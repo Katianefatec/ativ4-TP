@@ -19,7 +19,7 @@ import com.wb.wbbackend.entidades.Cliente;
 import com.wb.wbbackend.hateoas.HateoasCliente;
 import com.wb.wbbackend.repositorios.RepositorioCliente;
 
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class ControleCliente {
 	@Autowired
